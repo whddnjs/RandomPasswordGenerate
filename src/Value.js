@@ -13,31 +13,14 @@ for (let i = 65; i <= 90; i++) {
   upperCaseValue.push(String.fromCharCode(i));
 }
 
-const symbolValue = ['!', '@', '#', '$', '%', '^', '&', '*'];
+const symbolValue = ['@', '#', '$', '%', '^', '&', '*'];
 
-const ambiguousValue = [
-  '{',
-  '}',
-  '[',
-  ']',
-  '(',
-  ')',
-  '/',
-  "'",
-  '"',
-  '~',
-  ',',
-  '.',
-  ';',
-  ':',
-  '<',
-  '>',
-];
+const similarValue = ['i', 'I', 'l', 'L', '1', 'o', 'O', '0'];
 
 export {
   numberValue,
   lowerCaseValue,
   upperCaseValue,
   symbolValue,
-  ambiguousValue,
+  similarValue,
 };
