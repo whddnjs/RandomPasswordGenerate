@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import optionSlice from './optionSlice';
-import valueArrSlice from './valueArrSlice';
+import passwordSlice from './passwordSlice';
 
 const store = configureStore({
   reducer: {
     option: optionSlice.reducer,
-    valueArr: valueArrSlice.reducer,
+    password: passwordSlice.reducer,
   },
 });
 

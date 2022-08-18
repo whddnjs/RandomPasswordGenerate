@@ -9,7 +9,7 @@ const optionSlice = createSlice({
     lower: false,
     upper: false,
     similar: false,
-    include: '',
+    include: null,
     exclude: '',
   },
   reducers: {

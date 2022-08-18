@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DefaultLayout from './DefaultLayout';
 import {
@@ -11,7 +11,7 @@ import {
   changeExclude,
   changeInclude,
 } from '../store/optionSlice';
-import { addArr } from '../store/valueArrSlice';
+import { addPassword } from '../store/passwordSlice';
 import {
   numberValue,
   lowerCaseValue,
@@ -22,8 +22,10 @@ import {
 
 export default function Generator() {
   const option = useSelector(state => state.option);
-  const valueArr = useSelector(state => state.valueArr);
+  const password = useSelector(state => state.password);
   const dispatch = useDispatch();
+
+  const copyRef = useRef();
 
   const pwLengthArr = [];
   for (let i = 8; i <= 128; i++) {
@@ -53,6 +55,68 @@ export default function Generator() {
   };
   const onChangeInclude = e => {
     dispatch(changeInclude(e.target.value));
+  };
+
+  const generatePassword = () => {
+    const valueArr = [];
+    if (option.symbol) valueArr.push(...symbolValue);
+    if (option.number) valueArr.push(...numberValue);
+    if (option.lower) valueArr.push(...lowerCaseValue);
+    if (option.upper) valueArr.push(...upperCaseValue);
+    if (option.similar) {
+      similarValue.forEach(item => {
+        let index = valueArr.indexOf(item);
+
+        if (index !== -1) {
+          valueArr.splice(index, 1);
+        }
+      });
+    }
+
+    if (!option.symbol && !option.number && !option.lower && !option.upper) {
+      alert('비밀번호에 포함할 요소를 선택해주세요');
+      return;
+    }
+
+    while (true) {
+      const password = [];
+      for (let i = 0; i < option.length; i++) {
+        const random = Math.floor(Math.random() * valueArr.length);
+        if (option.exclude.includes(valueArr[random])) {
+          i--;
+          continue;
+        }
+        password.push(valueArr[random]);
+      }
+
+      if (option.include !== null) {
+        if (password.join('').includes(option.include)) {
+          dispatch(addPassword(password.join('')));
+          return;
+        } else {
+          continue;
+        }
+      } else {
+        dispatch(addPassword(password.join('')));
+        return;
+      }
+
+      // if (password.join('').includes(option.include)) {
+      //   console.log(password.join('').includes(option.include));
+      //   dispatch(addPassword(password.join('')));
+      // }
+    }
+
+    // dispatch(addPassword(password.join('')));
+  };
+
+  const copyPassword = () => {
+    copyRef.current.focus();
+    copyRef.current.select();
+
+    navigator.clipboard.writeText(copyRef.current.value).then(() => {
+      alert('복사완료');
+    });
   };
 
   return (
@@ -147,7 +211,11 @@ export default function Generator() {
           </div>
           {/* 비밀번호 생성 버튼 */}
           <div className="mb-2">
-            <button type="button" className="px-1 border ml-60">
+            <button
+              type="button"
+              className="px-1 border ml-60"
+              onClick={generatePassword}
+            >
               비밀번호 생성
             </button>
             {/* <button className="px-1 ml-1 border">옵션 초기화</button> */}
@@ -156,14 +224,30 @@ export default function Generator() {
           <div className="flex mb-2">
             <div className="w-60">생성된 비밀번호</div>
             <div className="flex">
-              <div className="border min-w-[16rem]">비밀번호</div>
-              <button className="px-2 ml-2 border">복사</button>
+              <input
+                type="text"
+                className="border min-w-[16rem]"
+                ref={copyRef}
+                value={password[password.length - 1] ?? ''}
+                readOnly
+              />
+              {/* <div className="border min-w-[16rem]">
+                {password[password.length - 1]}
+              </div> */}
+              <button className="px-2 ml-2 border" onClick={copyPassword}>
+                복사
+              </button>
             </div>
           </div>
           {/* 이전 비밀번호 */}
           <div className="flex">
             <div className="w-60">이전에 생성된 비밀번호</div>
-            <div>이전 비밀번호</div>
+            <input
+              type="text"
+              value={password[password.length - 2] ?? ''}
+              readOnly
+            />
+            {/* <div>{password[password.length - 2]}</div> */}
           </div>
         </div>
       </div>
