@@ -1,17 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  length: 8,
+  symbol: false,
+  number: false,
+  lower: false,
+  upper: false,
+  similar: false,
+  exclude: '',
+  include: '',
+};
+
 const optionSlice = createSlice({
   name: 'option',
-  initialState: {
-    length: 8,
-    symbol: false,
-    number: false,
-    lower: false,
-    upper: false,
-    similar: false,
-    include: null,
-    exclude: '',
-  },
+  initialState,
   reducers: {
     changeLength: (state, action) => {
       state.length = Number(action.payload);

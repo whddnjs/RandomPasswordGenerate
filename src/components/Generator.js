@@ -58,6 +58,15 @@ export default function Generator() {
   };
 
   const generatePassword = () => {
+    if (
+      option.exclude === option.include &&
+      option.exclude !== '' &&
+      option.include !== ''
+    ) {
+      alert('포함할 단어와 제외할 단어가 같습니다.');
+      return;
+    }
+
     const valueArr = [];
     if (option.symbol) valueArr.push(...symbolValue);
     if (option.number) valueArr.push(...numberValue);
@@ -82,14 +91,20 @@ export default function Generator() {
       const password = [];
       for (let i = 0; i < option.length; i++) {
         const random = Math.floor(Math.random() * valueArr.length);
-        if (option.exclude.includes(valueArr[random])) {
-          i--;
-          continue;
-        }
+        // if (option.exclude.includes(valueArr[random])) {
+        //   i--;
+        //   continue;
+        // }
         password.push(valueArr[random]);
       }
 
-      if (option.include !== null) {
+      if (option.exclude !== '') {
+        if (password.join('').includes(option.exclude)) {
+          continue;
+        }
+      }
+
+      if (option.include !== '') {
         if (password.join('').includes(option.include)) {
           dispatch(addPassword(password.join('')));
           return;
@@ -100,14 +115,7 @@ export default function Generator() {
         dispatch(addPassword(password.join('')));
         return;
       }
-
-      // if (password.join('').includes(option.include)) {
-      //   console.log(password.join('').includes(option.include));
-      //   dispatch(addPassword(password.join('')));
-      // }
     }
-
-    // dispatch(addPassword(password.join('')));
   };
 
   const copyPassword = () => {
@@ -218,7 +226,6 @@ export default function Generator() {
             >
               비밀번호 생성
             </button>
-            {/* <button className="px-1 ml-1 border">옵션 초기화</button> */}
           </div>
           {/* 비밀번호 생성 되는곳 */}
           <div className="flex mb-2">
@@ -226,14 +233,11 @@ export default function Generator() {
             <div className="flex">
               <input
                 type="text"
-                className="border min-w-[16rem]"
+                className="border min-w-[16rem] outline-none"
                 ref={copyRef}
                 value={password[password.length - 1] ?? ''}
                 readOnly
               />
-              {/* <div className="border min-w-[16rem]">
-                {password[password.length - 1]}
-              </div> */}
               <button className="px-2 ml-2 border" onClick={copyPassword}>
                 복사
               </button>
@@ -244,10 +248,10 @@ export default function Generator() {
             <div className="w-60">이전에 생성된 비밀번호</div>
             <input
               type="text"
+              className="border min-w-[16rem] outline-none"
               value={password[password.length - 2] ?? ''}
               readOnly
             />
-            {/* <div>{password[password.length - 2]}</div> */}
           </div>
         </div>
       </div>
